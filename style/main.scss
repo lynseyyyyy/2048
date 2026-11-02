@@ -1,23 +1,32 @@
+@use "sass:math";
 @import "helpers";
-@import "fonts/clear-sans.css";
 
 $field-width: 500px;
 $grid-spacing: 15px;
 $grid-row-cells: 4;
-$tile-size: ($field-width - $grid-spacing * ($grid-row-cells + 1)) / $grid-row-cells;
-$tile-border-radius: 3px;
+$tile-size: math.div($field-width - $grid-spacing * ($grid-row-cells + 1), $grid-row-cells);
+$tile-border-radius: 16px;
 
 $mobile-threshold: $field-width + 20px;
 
-$text-color: #776E65;
-$bright-text-color: #f9f6f2;
+// Pastel palette
+$text-color: #7a5c8a;
+$bright-text-color: #ffffff;
+$pink: #ff9ec7;
+$pink-deep: #f07fb4;
+$lavender: #c3a6f5;
+$lavender-deep: #a07ee6;
 
-$tile-color: #eee4da;
-$tile-gold-color: #edc22e;
-$tile-gold-glow-color: lighten($tile-gold-color, 15%);
+$page-background: #ffeef5;
+$card-background: rgba(255, 255, 255, .6);
 
-$game-container-margin-top: 40px;
-$game-container-background: #bbada0;
+$cell-color: rgba(255, 255, 255, .55);
+
+$game-container-margin-top: 32px;
+$game-container-background: linear-gradient(145deg, #f8d3e8 0%, #dfcbf7 100%);
+
+$title-font: "Fredoka", "Baloo 2", "Trebuchet MS", sans-serif;
+$body-font: "Quicksand", "Nunito", "Helvetica Neue", Arial, sans-serif;
 
 $transition-speed: 100ms;
 
@@ -25,14 +34,24 @@ html, body {
   margin: 0;
   padding: 0;
 
-  background: #faf8ef;
+  background-color: $page-background;
   color: $text-color;
-  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  font-family: $body-font;
   font-size: 18px;
+  font-weight: 500;
 }
 
 body {
-  margin: 80px 0;
+  margin: 0;
+  padding: 60px 0;
+  min-height: 100vh;
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 182, 214, .55) 0, transparent 38%),
+    radial-gradient(circle at 88% 12%, rgba(205, 180, 255, .5) 0, transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(255, 200, 225, .5) 0, transparent 42%),
+    $page-background;
+  background-attachment: fixed;
 }
 
 .heading {
@@ -40,11 +59,19 @@ body {
 }
 
 h1.title {
-  font-size: 80px;
-  font-weight: bold;
-  margin: 0;
+  font-family: $title-font;
+  font-size: 54px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 6px 0 0;
   display: block;
   float: left;
+  letter-spacing: -.5px;
+  background: linear-gradient(120deg, $pink-deep 0%, $lavender-deep 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: $pink-deep; // fallback when background-clip is unsupported
 }
 
 @include keyframes(move-up) {
@@ -69,37 +96,44 @@ h1.title {
 
   position: relative;
   display: inline-block;
-  background: $game-container-background;
-  padding: 15px 25px;
+  background: $card-background;
+  border: 2px solid rgba(255, 255, 255, .9);
+  box-shadow: 0 6px 18px rgba(214, 140, 190, .25);
+  padding: 15px 22px;
+  font-family: $title-font;
   font-size: $height;
   height: $height;
   line-height: $height + 22px;
-  font-weight: bold;
-  border-radius: 3px;
-  color: white;
+  font-weight: 600;
+  border-radius: 18px;
+  color: $text-color;
   margin-top: 8px;
+  margin-left: 6px;
   text-align: center;
+  min-width: 50px;
 
   &:after {
     position: absolute;
     width: 100%;
-    top: 10px;
+    top: 9px;
     left: 0;
     text-transform: uppercase;
-    font-size: 13px;
+    letter-spacing: 1px;
+    font-family: $body-font;
+    font-size: 11px;
+    font-weight: 700;
     line-height: 13px;
     text-align: center;
-    color: $tile-color;
+    color: $pink-deep;
   }
 
   .score-addition {
     position: absolute;
     right: 30px;
-    color: red;
     font-size: $height;
     line-height: $height;
     font-weight: bold;
-    color: rgba($text-color, .9);
+    color: rgba($lavender-deep, .9);
     z-index: 100;
     @include animation(move-up 600ms ease-in);
     @include animation-fill-mode(both);
@@ -121,21 +155,25 @@ p {
 }
 
 a {
-  color: $text-color;
+  color: $pink-deep;
   font-weight: bold;
   text-decoration: underline;
+  text-decoration-color: rgba($pink-deep, .4);
   cursor: pointer;
 }
 
 strong {
+  color: #a05c90;
+
   &.important {
     text-transform: uppercase;
+    letter-spacing: .5px;
   }
 }
 
 hr {
   border: none;
-  border-bottom: 1px solid lighten($text-color, 40%);
+  border-bottom: 2px dashed rgba($lavender, .6);
   margin-top: 20px;
   margin-bottom: 30px;
 }
@@ -158,13 +196,29 @@ hr {
 // Styles for buttons
 @mixin button {
   display: inline-block;
-  background: darken($game-container-background, 20%);
-  border-radius: 3px;
-  padding: 0 20px;
+  background: linear-gradient(120deg, $pink 0%, $lavender 100%);
+  border-radius: 999px;
+  padding: 0 24px;
   text-decoration: none;
+  font-family: $title-font;
+  font-weight: 600;
+  letter-spacing: .3px;
   color: $bright-text-color;
-  height: 40px;
+  text-shadow: 0 1px 2px rgba(150, 70, 130, .3);
+  height: 42px;
   line-height: 42px;
+  box-shadow: 0 6px 16px rgba(220, 120, 180, .35);
+  @include transition(transform 150ms ease, box-shadow 150ms ease);
+
+  &:hover {
+    @include transform(translateY(-2px));
+    box-shadow: 0 10px 22px rgba(200, 120, 200, .4);
+  }
+
+  &:active {
+    @include transform(translateY(0));
+    box-shadow: 0 4px 10px rgba(200, 120, 200, .3);
+  }
 }
 
 // Game field mixin used to render CSS at different width
@@ -186,7 +240,9 @@ hr {
     touch-action: none;
 
     background: $game-container-background;
-    border-radius: $tile-border-radius * 2;
+    border-radius: $tile-border-radius * 1.5;
+    box-shadow: 0 18px 40px rgba(200, 130, 190, .3),
+                inset 0 2px 0 rgba(255, 255, 255, .7);
     width: $field-width;
     height: $field-width;
     -webkit-box-sizing: border-box;
@@ -201,19 +257,22 @@ hr {
       right: 0;
       bottom: 0;
       left: 0;
-      background: rgba($tile-color, .5);
+      background: rgba(255, 240, 248, .72);
+      -webkit-backdrop-filter: blur(3px);
+      backdrop-filter: blur(3px);
+      border-radius: inherit;
       z-index: 100;
 
       text-align: center;
 
       p {
+        font-family: $title-font;
         font-size: 60px;
-        font-weight: bold;
+        font-weight: 700;
         height: 60px;
         line-height: 60px;
         margin-top: 222px;
-        // height: $field-width;
-        // line-height: $field-width;
+        color: $pink-deep;
       }
 
       .lower {
@@ -224,23 +283,26 @@ hr {
       a {
         @include button;
         margin-left: 9px;
-        // margin-top: 59px;
 
-	&.keep-playing-button {
-	  display: none;
-	}
+        &.keep-playing-button {
+          display: none;
+        }
       }
 
       @include animation(fade-in 800ms ease $transition-speed * 12);
       @include animation-fill-mode(both);
 
       &.game-won {
-        background: rgba($tile-gold-color, .5);
-        color: $bright-text-color;
+        background: linear-gradient(145deg, rgba(255, 190, 220, .75), rgba(200, 175, 250, .75));
 
-	a.keep-playing-button {
-	  display: inline-block;
-	}
+        p {
+          color: $bright-text-color;
+          text-shadow: 0 2px 8px rgba(160, 80, 160, .35);
+        }
+
+        a.keep-playing-button {
+          display: inline-block;
+        }
       }
 
       &.game-won, &.game-over {
@@ -276,7 +338,8 @@ hr {
 
     border-radius: $tile-border-radius;
 
-    background: rgba($tile-color, .35);
+    background: $cell-color;
+    box-shadow: inset 0 2px 6px rgba(200, 140, 190, .18);
 
     &:last-child {
       margin-right: 0;
@@ -293,6 +356,10 @@ hr {
       width: ceil($tile-size);
       height: ceil($tile-size);
       line-height: ceil($tile-size);
+    }
+
+    .tile-inner {
+      border-radius: $tile-border-radius;
     }
 
     // Build position classes
@@ -315,12 +382,13 @@ hr {
   position: absolute; // Makes transforms relative to the top-left corner
 
   .tile-inner {
-    border-radius: $tile-border-radius;
-
-    background: $tile-color;
+    background: linear-gradient(145deg, #fff7fb, #ffe9f3);
     text-align: center;
-    font-weight: bold;
+    font-family: $title-font;
+    font-weight: 600;
     z-index: 10;
+    box-shadow: 0 4px 10px rgba(210, 130, 180, .22),
+                inset 0 2px 0 rgba(255, 255, 255, .7);
 
     font-size: 55px;
   }
@@ -331,54 +399,35 @@ hr {
   -moz-transition-property: -moz-transform;
   transition-property: transform;
 
-  $base: 2;
-  $exponent: 1;
-  $limit: 11;
+  // Gradient start, gradient end, text color, glow strength (0-1)
+  $tile-styles: (
+    2:    (#fff7fb, #ffe9f3, #8a6a9a, 0),
+    4:    (#ffe6f2, #ffd3e8, #8a5f8f, 0),
+    8:    (#ffcfe4, #ffb4d4, #7a3e6a, 0),
+    16:   (#ffb8d8, #f99ac6, $bright-text-color, 0),
+    32:   (#f9a3cc, #ec82b8, $bright-text-color, 0),
+    64:   (#f08cbe, #dd6ba9, $bright-text-color, .1),
+    128:  (#e7c9ff, #cfa9f8, $bright-text-color, .3),
+    256:  (#d8b6fb, #ba92f1, $bright-text-color, .45),
+    512:  (#c6a2f6, #a67fe8, $bright-text-color, .6),
+    1024: (#b9c4ff, #9a9ef0, $bright-text-color, .8),
+    2048: (#ffc2dd, #b9a2f7, $bright-text-color, 1)
+  );
 
-  // Colors for all 11 states, false = no special color
-  $special-colors: false false, // 2
-                   false false, // 4
-                   #f78e48 true, // 8
-                   #fc5e2e true, // 16
-                   #ff3333 true, // 32
-                   #ff0000 true, // 64
-                   false true, // 128
-                   false true, // 256
-                   false true, // 512
-                   false true, // 1024
-                   false true; // 2048
-
-  // Build tile colors
-  @while $exponent <= $limit {
-    $power: pow($base, $exponent);
-
+  @each $power, $style in $tile-styles {
     &.tile-#{$power} .tile-inner {
-      // Calculate base background color
-      $gold-percent: ($exponent - 1) / ($limit - 1) * 100;
-      $mixed-background: mix($tile-gold-color, $tile-color, $gold-percent);
+      $glow: nth($style, 4);
 
-      $nth-color: nth($special-colors, $exponent);
+      background: linear-gradient(145deg, nth($style, 1), nth($style, 2));
+      color: nth($style, 3);
 
-      $special-background: nth($nth-color, 1);
-      $bright-color: nth($nth-color, 2);
-
-      @if $special-background {
-        $mixed-background: mix($special-background, $mixed-background, 55%);
+      @if nth($style, 3) == $bright-text-color {
+        text-shadow: 0 1px 3px rgba(140, 60, 130, .3);
       }
 
-      @if $bright-color {
-        color: $bright-text-color;
-      }
-
-      // Set background
-      background: $mixed-background;
-
-      // Add glow
-      $glow-opacity: max($exponent - 4, 0) / ($limit - 4);
-
-      @if not $special-background {
-        box-shadow: 0 0 30px 10px rgba($tile-gold-glow-color, $glow-opacity / 1.8),
-                    inset 0 0 0 1px rgba(white, $glow-opacity / 3);
+      @if $glow > 0 {
+        box-shadow: 0 0 (14px + 26px * $glow) (2px + 6px * $glow) rgba(215, 170, 255, $glow * .55),
+                    inset 0 2px 0 rgba(255, 255, 255, .55);
       }
 
       // Adjust font size for bigger numbers
@@ -397,14 +446,17 @@ hr {
         }
       }
     }
+  }
 
-    $exponent: $exponent + 1;
+  &.tile-2048 .tile-inner {
+    background: linear-gradient(135deg, #ffc2dd 0%, #d9b8ff 50%, #a9d8ff 100%);
   }
 
   // Super tiles (above 2048)
   &.tile-super .tile-inner {
     color: $bright-text-color;
-    background: mix(#333, $tile-gold-color, 95%);
+    background: linear-gradient(145deg, #9a72c9, #6d4d9a);
+    text-shadow: 0 1px 3px rgba(40, 10, 60, .35);
 
     font-size: 30px;
 
@@ -453,10 +505,12 @@ hr {
 
 .above-game {
   @include clearfix;
+  margin-top: 18px;
 }
 
 .game-intro {
   float: left;
+  font-size: 16px;
   line-height: 42px;
   margin-bottom: 0;
 }
@@ -469,30 +523,45 @@ hr {
 }
 
 .game-explanation {
-  margin-top: 50px;
+  margin-top: 40px;
+}
+
+.game-explanation, .credits {
+  background: $card-background;
+  border: 2px solid rgba(255, 255, 255, .9);
+  border-radius: 20px;
+  padding: 16px 20px;
+  font-size: 16px;
+  box-shadow: 0 6px 18px rgba(214, 140, 190, .15);
+}
+
+.credits {
+  font-size: 14px;
+  text-align: center;
 }
 
 @include smaller($mobile-threshold) {
   // Redefine variables for smaller screens
-  $field-width: 280px;
-  $grid-spacing: 10px;
-  $grid-row-cells: 4;
-  $tile-size: ($field-width - $grid-spacing * ($grid-row-cells + 1)) / $grid-row-cells;
-  $tile-border-radius: 3px;
-  $game-container-margin-top: 17px;
+  $field-width: 280px !global;
+  $grid-spacing: 10px !global;
+  $grid-row-cells: 4 !global;
+  $tile-size: math.div($field-width - $grid-spacing * ($grid-row-cells + 1), $grid-row-cells) !global;
+  $tile-border-radius: 10px !global;
+  $game-container-margin-top: 17px !global;
 
   html, body {
     font-size: 15px;
   }
 
   body {
-    margin: 20px 0;
-    padding: 0 20px;
+    padding: 20px;
   }
 
   h1.title {
-    font-size: 27px;
-    margin-top: 15px;
+    float: none;
+    text-align: center;
+    font-size: 36px;
+    margin: 0 0 10px;
   }
 
   .container {
@@ -500,14 +569,23 @@ hr {
     margin: 0 auto;
   }
 
+  .scores-container {
+    float: none;
+    text-align: center;
+  }
+
   .score-container, .best-container {
-    margin-top: 0;
+    margin: 0 3px;
     padding: 15px 10px;
-    min-width: 40px;
+    min-width: 60px;
   }
 
   .heading {
     margin-bottom: 10px;
+  }
+
+  .above-game {
+    margin-top: 10px;
   }
 
   // Show intro and restart button side by side
@@ -515,7 +593,7 @@ hr {
     width: 55%;
     display: block;
     box-sizing: border-box;
-    line-height: 1.65;
+    line-height: 1.5;
   }
 
   .restart-button {
